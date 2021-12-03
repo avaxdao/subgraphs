@@ -1,0 +1,36 @@
+type User @entity {
+  id: ID! # address
+  username: String!
+  isActive: Boolean!
+
+  createdAt: BigInt!
+  updatedAt: BigInt!
+
+  # Block number when the user was created.
+  block: BigInt!
+
+  totalPoints: BigInt!
+  points: [Point!]! @derivedFrom(field: "user")
+}
+type Point implements Event @entity {
+  id: ID! # address - taskId
+  user: User!
+
+  points: BigInt!
+  taskId: BigInt!
+
+  # Transaction
+  transaction: Transaction!
+  timestamp: BigInt!
+}
+type Transaction @entity {
+  id: ID!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  events: [Event!]! @derivedFrom(field: "transaction")
+}
+interface Event {
+  id: ID!
+  transaction: Transaction!
+  timestamp: BigInt!
+}

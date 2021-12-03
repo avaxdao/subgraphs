@@ -1,0 +1,287 @@
+[
+  {
+    "type": "constructor",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      { "type": "uint256", "name": "_pauseFee", "internalType": "uint256" },
+      { "type": "uint256", "name": "_reactivateFee", "internalType": "uint256" },
+      { "type": "address", "name": "_governanceNftAddress", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "UserNew",
+    "inputs": [
+      { "type": "address", "name": "userAddress", "internalType": "address", "indexed": true },
+      { "type": "address", "name": "nftAddress", "internalType": "address", "indexed": false },
+      { "type": "uint256", "name": "tokenId", "internalType": "uint256", "indexed": false },
+      { "type": "string", "name": "username", "internalType": "string", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UserPause",
+    "inputs": [{ "type": "address", "name": "userAddress", "internalType": "address", "indexed": true }],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UserPointDecrease",
+    "inputs": [
+      { "type": "address", "name": "userAddress", "internalType": "address", "indexed": true },
+      { "type": "uint256", "name": "points", "internalType": "uint256", "indexed": false },
+      { "type": "uint256", "name": "taskId", "internalType": "uint256", "indexed": true }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UserPointDecreaseMultiple",
+    "inputs": [
+      { "type": "address[]", "name": "userAddresses", "internalType": "address[]", "indexed": false },
+      { "type": "uint256", "name": "points", "internalType": "uint256", "indexed": false },
+      { "type": "uint256", "name": "taskId", "internalType": "uint256", "indexed": true }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UserPointIncrease",
+    "inputs": [
+      { "type": "address", "name": "userAddress", "internalType": "address", "indexed": true },
+      { "type": "uint256", "name": "points", "internalType": "uint256", "indexed": false },
+      { "type": "uint256", "name": "taskId", "internalType": "uint256", "indexed": true }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UserPointIncreaseMultiple",
+    "inputs": [
+      { "type": "address[]", "name": "userAddresses", "internalType": "address[]", "indexed": false },
+      { "type": "uint256", "name": "points", "internalType": "uint256", "indexed": false },
+      { "type": "uint256", "name": "taskId", "internalType": "uint256", "indexed": true }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UserReactivate",
+    "inputs": [
+      { "type": "address", "name": "userAddress", "internalType": "address", "indexed": true },
+      { "type": "address", "name": "nftAddress", "internalType": "address", "indexed": false },
+      { "type": "uint256", "name": "tokenId", "internalType": "uint256", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UserUpdate",
+    "inputs": [
+      { "type": "address", "name": "userAddress", "internalType": "address", "indexed": true },
+      { "type": "address", "name": "nftAddress", "internalType": "address", "indexed": false },
+      { "type": "uint256", "name": "tokenId", "internalType": "uint256", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "activeProfileCount",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "payable",
+    "outputs": [],
+    "name": "createProfile",
+    "inputs": [
+      { "type": "address", "name": "_nftAddress", "internalType": "address" },
+      { "type": "uint64", "name": "_tokenId", "internalType": "uint64" },
+      { "type": "string", "name": "_username", "internalType": "string" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      { "type": "uint256", "name": "userId", "internalType": "uint256" },
+      { "type": "uint256", "name": "points", "internalType": "uint256" },
+      { "type": "uint256", "name": "timestamp", "internalType": "uint256" },
+      { "type": "uint256", "name": "tokenId", "internalType": "uint256" },
+      { "type": "address", "name": "nftAddress", "internalType": "address" },
+      { "type": "string", "name": "username", "internalType": "string" },
+      { "type": "bool", "name": "isActive", "internalType": "bool" }
+    ],
+    "name": "getUserProfile",
+    "inputs": [{ "type": "address", "name": "_userAddress", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "bool", "name": "", "internalType": "bool" }],
+    "name": "getUserStatus",
+    "inputs": [{ "type": "address", "name": "_userAddress", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "bool", "name": "", "internalType": "bool" }],
+    "name": "hasRegistered",
+    "inputs": [{ "type": "address", "name": "", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [{ "type": "bytes4", "name": "", "internalType": "bytes4" }],
+    "name": "onERC721Received",
+    "inputs": [
+      { "type": "address", "name": "", "internalType": "address" },
+      { "type": "address", "name": "", "internalType": "address" },
+      { "type": "uint256", "name": "", "internalType": "uint256" },
+      { "type": "bytes", "name": "", "internalType": "bytes" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "pauseFee",
+    "inputs": []
+  },
+  { "type": "function", "stateMutability": "payable", "outputs": [], "name": "pauseProfile", "inputs": [] },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "reactivateFee",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "payable",
+    "outputs": [],
+    "name": "reactivateProfile",
+    "inputs": [
+      { "type": "address", "name": "_nftAddress", "internalType": "address" },
+      { "type": "uint64", "name": "_tokenId", "internalType": "uint64" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "registerFee",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "transferOwnership",
+    "inputs": [{ "type": "address", "name": "_newOwner", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "updateApprovedContractState",
+    "inputs": [{ "type": "address", "name": "_contract", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "updateFee",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "updateFees",
+    "inputs": [
+      { "type": "uint256", "name": "_newRegisterFee", "internalType": "uint256" },
+      { "type": "uint256", "name": "_newUpdateFee", "internalType": "uint256" },
+      { "type": "uint256", "name": "_newPauseFee", "internalType": "uint256" },
+      { "type": "uint256", "name": "_newReactivateFee", "internalType": "uint256" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "updateNftAddressState",
+    "inputs": [{ "type": "address", "name": "_nftAddress", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "payable",
+    "outputs": [],
+    "name": "updateProfile",
+    "inputs": [
+      { "type": "address", "name": "_nftAddress", "internalType": "address" },
+      { "type": "uint64", "name": "_tokenId", "internalType": "uint64" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "updateUserPoints",
+    "inputs": [
+      { "type": "address", "name": "_userAddress", "internalType": "address" },
+      { "type": "uint64", "name": "_points", "internalType": "uint64" },
+      { "type": "uint64", "name": "_taskId", "internalType": "uint64" },
+      { "type": "uint256", "name": "addOrSubtract", "internalType": "uint256" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "updateUserPointsMultiple",
+    "inputs": [
+      { "type": "address[]", "name": "_userAddresses", "internalType": "address[]" },
+      { "type": "uint64", "name": "_points", "internalType": "uint64" },
+      { "type": "uint64", "name": "_taskId", "internalType": "uint64" },
+      { "type": "uint256", "name": "addOrSubtract", "internalType": "uint256" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "updateUsername",
+    "inputs": [
+      { "type": "address", "name": "_userAddress", "internalType": "address" },
+      { "type": "string", "name": "_randomName", "internalType": "string" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint64", "name": "", "internalType": "uint64" }],
+    "name": "userCount",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      { "type": "uint64", "name": "userId", "internalType": "uint64" },
+      { "type": "uint64", "name": "points", "internalType": "uint64" },
+      { "type": "uint64", "name": "timestamp", "internalType": "uint64" },
+      { "type": "uint64", "name": "tokenId", "internalType": "uint64" },
+      { "type": "address", "name": "nftAddress", "internalType": "address" },
+      { "type": "string", "name": "username", "internalType": "string" },
+      { "type": "bool", "name": "isActive", "internalType": "bool" }
+    ],
+    "name": "users",
+    "inputs": [{ "type": "address", "name": "", "internalType": "address" }]
+  },
+  { "type": "function", "stateMutability": "nonpayable", "outputs": [], "name": "withdraw", "inputs": [] },
+  { "type": "receive", "stateMutability": "payable" }
+]
