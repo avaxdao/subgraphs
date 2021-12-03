@@ -1,0 +1,102 @@
+type _Schema_
+  # Token
+  @fulltext(
+    name: "tokenSearch"
+    language: en
+    algorithm: rank
+    include: [{ entity: "Token", fields: [{ name: "id" }] }]
+  )
+  # Owner
+  @fulltext(
+    name: "ownerSearch"
+    language: en
+    algorithm: rank
+    include: [{ entity: "Account", fields: [{ name: "id" }] }]
+  )
+
+type Account @entity {
+  id: ID!
+
+  "List of tokens"
+  tokens: [Token!]! @derivedFrom(field: "owner")
+  "Total tokens"
+  totalTokens: BigInt!
+  "Total tokens Minted"
+  totalTokensMinted: BigInt!
+
+  "List of transfers from"
+  transferFrom: [Transfer!]! @derivedFrom(field: "from")
+  "List of transfers to"
+  transferTo: [Transfer!]! @derivedFrom(field: "to")
+  "Total transfers"
+  totalTransfers: BigInt!
+}
+
+type Contract @entity {
+  id: ID!
+
+  "Contract name"
+  name: String
+
+  "Contract symbol"
+  symbol: String
+
+  "Total tokens"
+  totalTokens: BigInt!
+
+  "Total owners"
+  totalOwners: BigInt!
+
+  "Total transfers"
+  totalTransfers: BigInt!
+}
+
+type Token @entity {
+  id: ID!
+
+  "OG Minter"
+  minter: Account!
+
+  "Owner"
+  owner: Account!
+
+  "URI"
+  uri: String
+
+  "List of transfers"
+  transfers: [Transfer!]! @derivedFrom(field: "token")
+
+  "Total transfers"
+  totalTransfers: BigInt!
+
+  "Block number"
+  block: BigInt!
+
+  "Created at"
+  createdAt: BigInt!
+
+  "Updated at"
+  updatedAt: BigInt!
+}
+
+type Transfer @entity {
+  id: ID!
+
+  "Transaction hash"
+  hash: Bytes!
+
+  "Block number"
+  blockNumber: BigInt!
+
+  "Block timestamp"
+  timestamp: BigInt!
+
+  "Token"
+  token: Token!
+
+  "Sender"
+  from: Account!
+
+  "Receiver"
+  to: Account!
+}
