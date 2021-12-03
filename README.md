@@ -1,8 +1,10 @@
 # Subgraphs
 
-1. Governance NFTs: Tracks all information relating to AxDAO governance NFTs.
+1. **[Profile](https://thegraph.com/hosted-service/subgraph/avaxdao/profile-v2)**: Tracks user profile NFT lockup status and points earned from Learn To Earn tasks.
 
-2. Power Tracker: Stores a record of all AxStarter ERC20 Token transactions to calculate a users Power on the AxStarter launchpad.
+2. **[Governance NFTs](https://thegraph.com/hosted-service/subgraph/avaxdao/governance-nfts)**: Tracks all information relating to AxDAO governance NFTs.
+
+3. Power Tracker: Stores a record of all AxStarter ERC20 Token transactions to calculate a users Power on the AxStarter launchpad.
 
 ## Dependencies
 

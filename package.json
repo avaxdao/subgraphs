@@ -4,9 +4,6 @@
   "license": "MIT",
   "repository": "git@github.com:avaxdao/subgraphs.git",
   "private": true,
-  "workspaces": [
-    "subgraphs/**/*"
-  ],
   "scripts": {
     "codegen": "lerna run codegen",
     "build": "lerna run build",
