@@ -1,0 +1,61 @@
+type Contract @entity {
+  "id = contract address"
+  id: ID!
+  asAccount: Account!
+  name: String
+  symbol: String
+  decimals: Int!
+  totalSupply: Balance!
+  balances: [Balance!]! @derivedFrom(field: "contract")
+  transfers: [Transfer!]! @derivedFrom(field: "contract")
+}
+type Account @entity {
+  "id = user address"
+  id: ID!
+  asContract: Contract
+  balances: [Balance!]! @derivedFrom(field: "account")
+  transferFrom: [Transfer!]! @derivedFrom(field: "from")
+  transferTo: [Transfer!]! @derivedFrom(field: "to")
+  events: [Event!]! @derivedFrom(field: "emitter")
+}
+type Balance @entity {
+  "id = contract address / user address"
+  id: ID!
+  contract: Contract!
+  account: Account
+  value: BigDecimal!
+  burnValue: BigDecimal!
+  greatestValue: BigDecimal!
+  transferFrom: [Transfer!]! @derivedFrom(field: "fromBalance")
+  transferTo: [Transfer!]! @derivedFrom(field: "toBalance")
+}
+type Transfer implements Event @entity {
+  id: ID!
+  emitter: Account!
+  transaction: Transaction!
+  timestamp: BigInt!
+  contract: Contract!
+  type: TransferType!
+  from: Account
+  fromBalance: Balance
+  to: Account
+  toBalance: Balance
+  value: BigDecimal!
+}
+interface Event {
+  id: ID!
+  transaction: Transaction!
+  emitter: Account!
+  timestamp: BigInt!
+}
+type Transaction @entity {
+  id: ID!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  events: [Event!]! @derivedFrom(field: "transaction")
+}
+enum TransferType {
+  Mint
+  Burn
+  Transfer
+}

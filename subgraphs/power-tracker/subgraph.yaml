@@ -1,0 +1,26 @@
+specVersion: 0.0.2
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ERC20
+    network: mainnet
+    source:
+      address: '0x0b94cdcbCFcf73914E60b1F55bAF0439511D12f7'
+      abi: IAXS
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ERC20Contract
+      abis:
+        - name: IAXS
+          file: ./abis/IAXS.json
+        - name: IERC20
+          file: ./abis/IERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/mapping.ts
