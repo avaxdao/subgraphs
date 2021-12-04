@@ -28,5 +28,4 @@ dataSources:
           handler: handleTransfer
         - event: ReserveGiveaway(uint256,address)
           handler: handleReserveGiveaway
-
       file: ./src/mapping.ts

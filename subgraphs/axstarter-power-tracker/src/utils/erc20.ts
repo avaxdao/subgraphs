@@ -25,7 +25,6 @@ export function fetchERC20(address: Address): Contract {
     contract.save()
     account.save()
   }
-
   return contract as Contract
 }
 

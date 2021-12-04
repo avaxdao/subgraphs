@@ -1,102 +1,54 @@
-type _Schema_
-  # Token
-  @fulltext(
-    name: "tokenSearch"
-    language: en
-    algorithm: rank
-    include: [{ entity: "Token", fields: [{ name: "id" }] }]
-  )
-  # Owner
-  @fulltext(
-    name: "ownerSearch"
-    language: en
-    algorithm: rank
-    include: [{ entity: "Account", fields: [{ name: "id" }] }]
-  )
-
-type Account @entity {
-  id: ID!
-
-  "List of tokens"
-  tokens: [Token!]! @derivedFrom(field: "owner")
-  "Total tokens"
-  totalTokens: BigInt!
-  "Total tokens Minted"
-  totalTokensMinted: BigInt!
-
-  "List of transfers from"
-  transferFrom: [Transfer!]! @derivedFrom(field: "from")
-  "List of transfers to"
-  transferTo: [Transfer!]! @derivedFrom(field: "to")
-  "Total transfers"
-  totalTransfers: BigInt!
-}
-
 type Contract @entity {
   id: ID!
-
-  "Contract name"
+  asAccount: Account!
   name: String
-
-  "Contract symbol"
   symbol: String
-
-  "Total tokens"
-  totalTokens: BigInt!
-
-  "Total owners"
   totalOwners: BigInt!
-
-  "Total transfers"
+  totalTokens: BigInt!
+  tokens: [Token!]! @derivedFrom(field: "contract")
   totalTransfers: BigInt!
+  transfers: [Transfer!]! @derivedFrom(field: "contract")
 }
-
+type Account @entity {
+  id: ID!
+  asContract: Contract
+  tokens: [Token!]! @derivedFrom(field: "owner")
+  totalTokens: BigInt!
+  totalTokensMinted: BigInt!
+  transferFrom: [Transfer!]! @derivedFrom(field: "from")
+  transferTo: [Transfer!]! @derivedFrom(field: "to")
+  events: [Event!]! @derivedFrom(field: "emitter")
+}
 type Token @entity {
   id: ID!
-
-  "OG Minter"
-  minter: Account!
-
-  "Owner"
-  owner: Account!
-
-  "URI"
-  uri: String
-
-  "List of transfers"
-  transfers: [Transfer!]! @derivedFrom(field: "token")
-
-  "Total transfers"
-  totalTransfers: BigInt!
-
-  "Block number"
-  block: BigInt!
-
-  "Created at"
+  identifier: BigInt!
+  contract: Contract!
   createdAt: BigInt!
-
-  "Updated at"
-  updatedAt: BigInt!
+  minter: Account!
+  owner: Account!
+  uri: String
+  totalTransfers: BigInt!
+  transfers: [Transfer!]! @derivedFrom(field: "token")
 }
-
-type Transfer @entity {
+type Transfer implements Event @entity {
   id: ID!
-
-  "Transaction hash"
-  hash: Bytes!
-
-  "Block number"
-  blockNumber: BigInt!
-
-  "Block timestamp"
+  emitter: Account!
+  transaction: Transaction!
   timestamp: BigInt!
-
-  "Token"
+  contract: Contract!
   token: Token!
-
-  "Sender"
   from: Account!
-
-  "Receiver"
   to: Account!
+}
+interface Event {
+  id: ID!
+  transaction: Transaction!
+  emitter: Account!
+  timestamp: BigInt!
+}
+type Transaction @entity {
+  id: ID!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  events: [Event!]! @derivedFrom(field: "transaction")
 }

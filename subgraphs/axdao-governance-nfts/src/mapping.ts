@@ -1,6 +1,5 @@
 /* eslint-disable prefer-const */
-import { Address } from '@graphprotocol/graph-ts'
-import { Transfer, Token } from '../generated/schema'
+import { Transfer } from '../generated/schema'
 import {
   Transfer as TransferEvent,
   ApeMinted as ApeMintedEvent,
@@ -8,91 +7,84 @@ import {
   // ApeNameUpdated,
   ReserveGiveaway as ReserveGiveawayEvent,
 } from '../generated/MutantAxApes/MutantAxApes'
-import { fetchTokenUri } from './utils'
-import { fetchAccount } from './utils/fetchAccount'
-import { fetchContract } from './utils/fetchContract'
-import { fetchToken } from './utils/fetchToken'
-import { constants } from './utils/constants'
+import { fetchAccount } from './utils/account'
+import { fetchERC721, fetchToken } from './utils/erc721'
+import { constants, events, transactions } from '@amxx/graphprotocol-utils'
+
+let PROFILE_ADDRESS = '0x654de7fcfaa4ab8aea260c04fd47078434a49d01'
+let RESERVE_ADDRESS = '0xD337Ad1E01861eD8e039FC4927803B1462421a12'
 
 export function handleTransfer(event: TransferEvent): void {
-  // Contract
-  let contract = fetchContract(Address.fromString(constants.MUTANT_AX_APES_ADDRESS))
-  let from = fetchAccount(event.params.from)
-  let to = fetchAccount(event.params.to)
+  if (event.params.from.toHex() != PROFILE_ADDRESS && event.params.to.toHex() != PROFILE_ADDRESS) {
+    let contract = fetchERC721(event.address)
+    let transfer = new Transfer(events.id(event))
 
-  contract.totalTransfers = contract.totalTransfers.plus(constants.BIGINT_ONE)
-  contract.save()
+    let from = fetchAccount(event.params.from.toHex())
+    let to = fetchAccount(event.params.to.toHex())
+    let token = fetchToken(contract, event.params.tokenId, to)
 
-  if (
-    event.params.from.notEqual(Address.fromString(constants.PROFILE_ADDRESS)) &&
-    event.params.to.notEqual(Address.fromString(constants.PROFILE_ADDRESS))
-  ) {
-    // To
-    to.totalTokens = to.totalTokens.plus(constants.BIGINT_ONE)
-    to.totalTransfers = to.totalTransfers.plus(constants.BIGINT_ONE)
-    to.save()
+    contract.totalTransfers = contract.totalTransfers.plus(constants.BIGINT_ONE)
+    token.totalTransfers = token.totalTransfers.plus(constants.BIGINT_ONE)
+    token.owner = to.id
 
-    // From
-    from.totalTokens = event.params.from.equals(Address.fromString(constants.ADDRESS_ZERO))
-      ? from.totalTokens
-      : from.totalTokens.minus(constants.BIGINT_ONE)
-    from.totalTransfers = from.totalTransfers.plus(constants.BIGINT_ONE)
-    from.save()
+    if (from.id != constants.ADDRESS_ZERO) {
+      from.totalTokens = from.totalTokens.minus(constants.BIGINT_ONE)
 
-    if (event.params.from.notEqual(Address.fromString(constants.ADDRESS_ZERO))) {
-      // Token
-      let token = fetchToken(event.params.tokenId)
-      token.owner = to.id
-      token.totalTransfers = token.totalTransfers.plus(constants.BIGINT_ONE)
-      token.updatedAt = event.block.timestamp
-      token.save()
+      if (from.totalTokens == constants.BIGINT_ZERO) {
+        contract.totalOwners = contract.totalOwners.minus(constants.BIGINT_ONE)
+      }
     }
-  }
 
-  // Transfer
-  let transfer = new Transfer(event.transaction.hash.toHex())
-  transfer.hash = event.transaction.hash
-  transfer.from = from.id
-  transfer.to = to.id
-  transfer.token = event.params.tokenId.toString()
-  transfer.timestamp = event.block.timestamp
-  transfer.save()
+    if (to.id != constants.ADDRESS_ZERO) {
+      to.totalTokens = to.totalTokens.plus(constants.BIGINT_ONE)
+
+      if (to.totalTokens == constants.BIGINT_ONE) {
+        contract.totalOwners = contract.totalOwners.plus(constants.BIGINT_ONE)
+      }
+    }
+
+    transfer.emitter = contract.id
+    transfer.transaction = transactions.log(event).id
+    transfer.timestamp = event.block.timestamp
+    transfer.contract = contract.id
+    transfer.token = token.id
+    transfer.from = from.id
+    transfer.to = to.id
+
+    from.save()
+    to.save()
+    contract.save()
+    token.save()
+    transfer.save()
+  }
 }
 
 export function handleReserveGiveaway(event: ReserveGiveawayEvent): void {
-  // From
-  let from = fetchAccount(Address.fromString(constants.RESERVE_ADDRESS))
+  let contract = fetchERC721(event.address)
+  let from = fetchAccount(RESERVE_ADDRESS)
+  let to = fetchAccount(event.params.winner.toHex())
+  let token = fetchToken(contract, event.params.apeId, to)
+
   from.totalTokensMinted = from.totalTokensMinted.minus(constants.BIGINT_ONE)
-  from.save()
-
-  // To
-  let to = fetchAccount(event.params.winner)
   to.totalTokensMinted = to.totalTokensMinted.plus(constants.BIGINT_ONE)
-  to.save()
-
-  // Token
-  let token = fetchToken(event.params.apeId)
   token.minter = to.id
+
   token.save()
+  from.save()
+  to.save()
 }
 
 export function handleApeMinted(event: ApeMintedEvent): void {
-  let token = new Token(event.params.apeId.toString())
-  let to = fetchAccount(event.params.minter)
-  let contract = fetchContract(Address.fromString(constants.MUTANT_AX_APES_ADDRESS))
+  let contract = fetchERC721(event.address)
+  let to = fetchAccount(event.params.minter.toHex())
+  let token = fetchToken(contract, event.params.apeId, to)
 
-  token.minter = event.params.minter.toString()
-  token.owner = event.params.minter.toString()
-  token.uri = fetchTokenUri(event.params.apeId)
-  token.totalTransfers = constants.BIGINT_ZERO
-  token.block = event.block.number
+  token.minter = to.id
   token.createdAt = event.block.timestamp
-  token.updatedAt = event.block.timestamp
-  token.save()
-
   contract.totalTokens = contract.totalTokens.plus(constants.BIGINT_ONE)
-  contract.save()
-
   to.totalTokensMinted = to.totalTokensMinted.plus(constants.BIGINT_ONE)
+
+  contract.save()
+  token.save()
   to.save()
 }
